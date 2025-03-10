@@ -1,36 +1,24 @@
-import { Product } from '@/products/interfaces/product.interface';
 import { ProductsService } from '@/products/services/products.service';
+import { PaginationComponent } from '@/shared/components/pagination/pagination.component';
+import { PaginationService } from '@/shared/components/pagination/pagination.service';
 import { ProductCardComponent } from '@/store-front/components/product-card/product-card.component';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [ProductCardComponent],
+  imports: [ProductCardComponent, PaginationComponent],
   templateUrl: './home-page.component.html',
 })
 export class HomePageComponent {
   private productsService = inject(ProductsService);
+  paginationService = inject(PaginationService);
 
-  products = signal<Product[]>([]);
-
-  constructor() {
-    this.loadProducts();
-  }
-
-  loadProducts() {
-    this.productsService.getProducts({}).subscribe({});
-  }
-
-  // countryResource = resource({
-  //   request: () => ({  }),
-  //   loader: async ({ request }) => {
-  //     if (!request.query) return [];
-
-  //     // Convert
-  //     return await firstValueFrom(
-  //       this.productsService.getProducts({}).subscribe({});
-  //     );
-  //   },
-  // });
+  productsResource = rxResource({
+    request: () => ({ page: this.paginationService.currentPage() - 1 }),
+    loader: ({ request }) => {
+      return this.productsService.getProducts({ offset: request.page * 9 });
+    },
+  });
 }

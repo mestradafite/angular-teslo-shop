@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
-  selector: 'front-navbar',
   standalone: true,
+  selector: 'front-navbar',
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './front-navbar.component.html',
 })
